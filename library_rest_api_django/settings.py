@@ -77,9 +77,15 @@ WSGI_APPLICATION = 'library_rest_api_django.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'librarydb1',
+        'USER':'userbis21',
+        'PASSWORD':'userbis21',
+        'HOST':'localhost',
+        'PORT':5432
+        
     }
+    
 }
 
 
