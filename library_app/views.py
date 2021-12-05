@@ -24,26 +24,6 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     #2ème méthode
 
-@api_view(['POST'])
-def author(request):
-    if request.method == 'POST':
-        author = AuthorSerializer(data=request.data)
-        if author.is_valid():
-            author.save()
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(author.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['DELETE'])
-def author_detail(request, pk):
-    try:
-        author = Author.objects.get(pk=pk)
-    except Author.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'DELETE':
-        author.delete()
-        return Response(status=status.HTTP_200_OK)
-
 @api_view(['GET'])
 def getAllBooks(request):
     if request.method=='GET':
@@ -55,17 +35,86 @@ def getAllBooks(request):
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @api_view(['GET'])
-def getBookByNameLike(request, expression):
+def getAllAuthors(request):
     if request.method=='GET':
-        books=Book.objects.filter(title__icontains=expression)
-        if books.is_empty():
+        if Author.objects.count()==0:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        authors=Author.objects.all()
+        result=AuthorSerializer(authors,many=True)
+        return Response(result.data,status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(['GET'])
+def getBookByNameLike(request, title):
+    if request.method=='GET':
+        books=Book.objects.filter(title__icontains=title)
+        if not books.exists():
             return Response(status=status.HTTP_404_NOT_FOUND)
         result=BookSerializer(books,many=True)
         return Response(result.data,status=status.HTTP_200_OK)
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+@api_view(['POST'])
+def addBook(request):
+    
+    if request.method=='POST':
+        book=BookSerializer(data=request.data)
+        if not book.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        b1 = Book.objects.get(pk=book.pk)
+        if b1.exists():
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        book.save()
+        return Response(status=status.HTTP_201_CREATED)
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['POST'])
+def addAuthor(request):
+    if request.method == 'POST':
+        author = AuthorSerializer(data=request.data)
+        if author.is_valid():
+            author.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(author.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(['DELETE'])
+def deleteAuthor(request, pk):
+    try:
+        author = Author.objects.get(pk=pk)
+    except Author.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
+        author.delete()
+        return Response(status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['DELETE'])
+def deleteBook(request, pk):
+    try:
+        book = Book.objects.get(pk=pk)
+    except Book.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
+        book.delete()
+        return Response(status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    
 @api_view(['PUT','PATCH'])
 def updateBook(request,pk):
+    if request.method=='PUT':
+        pass
+    elif request.method=='PATCH':
+        pass
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['PUT','PATCH'])
+def updateAuthor(request,pk):
     if request.method=='PUT':
         pass
     elif request.method=='PATCH':

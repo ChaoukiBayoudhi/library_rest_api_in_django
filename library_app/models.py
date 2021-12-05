@@ -9,7 +9,7 @@ class Author(models.Model):
     firstName = models.CharField(max_length=20)
     lastName = models.CharField(max_length=20)
     birthDate=models.DateField(default=date(1980,11,1))
-    photo = models.ImageField(upload_to='photos/authors', max_length=200)
+    photo = models.ImageField(upload_to='photos/authors', max_length=200,null=True,blank=True)
     class Meta:
         db_table = 'author_tab'
         managed = True #default value
@@ -21,7 +21,7 @@ class Book(models.Model):
     title = models.CharField(max_length=20)
     releaseDate=models.DateField(default=parse_date('2000-01-01'))
     summarize=models.TextField(max_length=300)
-    cover=models.ImageField(upload_to="photos/books",max_length=254)
+    cover=models.ImageField(upload_to="photos/books",max_length=254, null=True,blank=True)
     authors_books=models.ManyToManyField(Author)
     class Meta:
         db_table = 'book_tab'
