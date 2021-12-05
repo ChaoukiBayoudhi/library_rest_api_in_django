@@ -55,7 +55,7 @@ def getBookByNameLike(request, title):
         return Response(result.data,status=status.HTTP_200_OK)
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-@api_view(['POST'])
+@api_view(['GET','POST'])
 def addBook(request):
     
     if request.method=='POST':
@@ -67,9 +67,11 @@ def addBook(request):
             return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         book.save()
         return Response(status=status.HTTP_201_CREATED)
+    if request.method == 'GET':
+        return getAllBooks(request)
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-@api_view(['POST'])
+@api_view(['GET','POST'])
 def addAuthor(request):
     if request.method == 'POST':
         author = AuthorSerializer(data=request.data)
@@ -77,6 +79,8 @@ def addAuthor(request):
             author.save()
             return Response(status=status.HTTP_201_CREATED)
         return Response(author.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'GET':
+        return getAllAuthors(request)
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
@@ -91,14 +95,15 @@ def deleteAuthor(request, pk):
         author.delete()
         return Response(status=status.HTTP_200_OK)
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-@api_view(['DELETE'])
-def deleteBook(request, pk):
+def getBookByPk(pk):
     try:
         book = Book.objects.get(pk=pk)
     except Book.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
+    return book
+@api_view(['DELETE'])
+def deleteBook(request, pk):
+    book=getBookByPk(pk)
     if request.method == 'DELETE':
         book.delete()
         return Response(status=status.HTTP_200_OK)
@@ -107,14 +112,23 @@ def deleteBook(request, pk):
     
 @api_view(['PUT','PATCH'])
 def updateBook(request,pk):
+    book=getBookByPk(pk)
     if request.method=='PUT':
-        pass
+        bookSerialized = BookSerializer(book,request.data)
     elif request.method=='PATCH':
-        pass
-    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        bookSerialized = BookSerializer(book,request.data,partial=True)
+    else:
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    if bookSerialized.is_valid():
+            bookSerialized.save()
+            return Response(status=status.HTTP_201_CREATED)
+    return Response(bookSerialized.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
 
 @api_view(['PUT','PATCH'])
 def updateAuthor(request,pk):
+    
     if request.method=='PUT':
         pass
     elif request.method=='PATCH':

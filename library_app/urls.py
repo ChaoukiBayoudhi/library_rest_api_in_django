@@ -15,14 +15,13 @@ router.register(r'book',BookViewSet)
 
 urlpatterns = [
     path('',include(router.urls)),
-    path('authors/all/',getAllAuthors,name='allAuthor'),
-    path('authors/delete/<int:pk>/',deleteAuthor,name='DeleteAuthor'),
-    path('authors/add/',addAuthor,name="addAuthor"),
-    path('authors/delete/',deleteAuthor,name="deleteAuthor"),
-    path('authors/update/',updateAuthor,name="updateAuthor"),
-    path('books/add/',addBook,name="addBook"),
-    path('books/all/',getAllBooks,name='allBooks'),
-    path('books/delete/',deleteBook,name='deleteBook'),
-    path('books/update/',updateBook,name='updateBook'),
-    path('books/title-like/<str:title>',getBookByNameLike,name='bookTitleLike')
+    path(r'authors/all/',getAllAuthors,name='allAuthor'),
+    path(r'authors/add/',addAuthor,name="addAuthor"),
+    path(r'authors/delete/<int:pk>',deleteAuthor,name="deleteAuthor"),
+    path(r'authors/update/<int:pk>',updateAuthor,name="updateAuthor"),
+    path(r'books/add/',addBook,name="addBook"),
+    path(r'books/all/',getAllBooks,name='allBooks'),
+    path(r'books/delete/<str:pk>',deleteBook,name='deleteBook'),
+    path(r'books/update/<str:pk>',updateBook,name='updateBook'),
+    path(r'books/title-like/<str:title>',getBookByNameLike,name='bookTitleLike')
 ]

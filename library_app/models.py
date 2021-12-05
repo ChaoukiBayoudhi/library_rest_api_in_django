@@ -1,10 +1,18 @@
 from datetime import date
 from django.db import models
+from django.db.models import fields
 from django.utils.dateparse import parse_date
+from django import forms
 #from django.utils.dateparse import parse_datetime #for dateime
 
 
 # Create your models here.
+BookTypes=[
+        ('literature','LITERATURE'),
+        ('scientific','SCIENTIFIC'),
+        ('humanity','HUMANITY'),
+        ('other','OTHER')
+    ]
 class Author(models.Model):
     firstName = models.CharField(max_length=20)
     lastName = models.CharField(max_length=20)
@@ -15,7 +23,7 @@ class Author(models.Model):
         managed = True #default value
         verbose_name = 'Ahothor'
         verbose_name_plural = 'Authors'
-    
+        
 class Book(models.Model):
     esbnCode=models.CharField(max_length=20,primary_key=True)
     title = models.CharField(max_length=20)
@@ -23,8 +31,32 @@ class Book(models.Model):
     summarize=models.TextField(max_length=300)
     cover=models.ImageField(upload_to="photos/books",max_length=254, null=True,blank=True)
     authors_books=models.ManyToManyField(Author)
+    bookType=models.CharField(max_length=10,null=True,blank=True,choices=BookTypes)
     class Meta:
         db_table = 'book_tab'
         managed = True
         verbose_name = 'Book'
         verbose_name_plural = 'Books'
+
+
+#form Classes
+class AuthorForm(forms.ModelForm):
+    class Meta:
+        model=Author
+        fields=['firstName','lastName','birthDate','photo']
+        
+
+class BookForm(forms.ModelForm):
+    class Meta:
+        model=Book
+        fields='__all__'
+
+#the previous code is equivalent to the below one
+# class BookForm(forms.Form):
+#     esbnCode=forms.CharField(max_length=20)
+#     title = forms.CharField(max_length=10)
+#     releaseDate = forms.DateField(required=False)
+#     bookType = forms.CharField(
+#     max_length=10,
+#     widget=forms.Select(choices=BookTypes),
+#     )
