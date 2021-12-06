@@ -23,6 +23,23 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 
     #2ème méthode
+#syntax : nomModele.objects.Method([parameters])
+# Method peut être all(), get(), filter(), exclude(),....
+#Au lieu de method on peut avoir une chaine de méthodes
+#par exemple .filter(...).filter(....).exclude(....)
+#en SQL : select * from Book
+#avec l'ORM :
+#Le resultat est l'objet QuerySet
+# result=Book.objects.all()
+#recupere le book dont le title est x
+#result=Book.objects.get(title=x)
+#recupere les books telsque la date de sortie est après 2010
+#books=Book.objects.filter(releaseDate__year__gt=2010)
+#au lieu de __gt on peut avoir __lt(<), __gte(>=),__lte
+#__exact, __iexact (insensitive exact)
+#__contains, icontains, __isnull, __startwith,__endswith,...
+#ordonner le resultat par title
+#result=Book.objects.order_by('title')
 
 @api_view(['GET'])
 def getAllBooks(request):
@@ -55,7 +72,7 @@ def getBookByNameLike(request, title):
         return Response(result.data,status=status.HTTP_200_OK)
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-@api_view(['GET','POST'])
+@api_view(['POST'])
 def addBook(request):
     
     if request.method=='POST':
@@ -67,8 +84,8 @@ def addBook(request):
             return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         book.save()
         return Response(status=status.HTTP_201_CREATED)
-    if request.method == 'GET':
-        return getAllBooks(request)
+    # if request.method == 'GET':
+    #     return getAllBooks(request)
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @api_view(['GET','POST'])
@@ -121,7 +138,7 @@ def updateBook(request,pk):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
     if bookSerialized.is_valid():
             bookSerialized.save()
-            return Response(status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_202_ACCEPTED)
     return Response(bookSerialized.errors, status=status.HTTP_400_BAD_REQUEST)
     
     

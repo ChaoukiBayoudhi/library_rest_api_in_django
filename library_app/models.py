@@ -30,7 +30,7 @@ class Book(models.Model):
     releaseDate=models.DateField(default=parse_date('2000-01-01'))
     summarize=models.TextField(max_length=300)
     cover=models.ImageField(upload_to="photos/books",max_length=254, null=True,blank=True)
-    authors_books=models.ManyToManyField(Author)
+    authors_books=models.ManyToManyField(Author,null=True,blank=True)
     bookType=models.CharField(max_length=10,null=True,blank=True,choices=BookTypes)
     class Meta:
         db_table = 'book_tab'
@@ -44,7 +44,18 @@ class AuthorForm(forms.ModelForm):
     class Meta:
         model=Author
         fields=['firstName','lastName','birthDate','photo']
-        
+
+#en HTML en utilise les balises HTML et L DTL : Django Template Language :
+#si on veut recuperer la valeur d'une variable
+#{{ nom_variable }}
+#{%for x in books :}
+# <tr>
+     #<td>{{ x.title }}
+     #....
+#{% endfor %}
+#{%if condition :%}
+#....
+#{% endif %}
 
 class BookForm(forms.ModelForm):
     class Meta:
